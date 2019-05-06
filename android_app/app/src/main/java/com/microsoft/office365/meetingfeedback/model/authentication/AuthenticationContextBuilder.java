@@ -6,22 +6,12 @@ package com.microsoft.office365.meetingfeedback.model.authentication;
 
 import android.content.Context;
 
-import com.microsoft.aad.adal.AuthenticationContext;
+import com.microsoft.identity.client.PublicClientApplication;
 import com.microsoft.office365.meetingfeedback.model.Constants;
-
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.NoSuchPaddingException;
 
 public class AuthenticationContextBuilder {
 
-    public static AuthenticationContext newInstance(Context context) {
-        try {
-            return new AuthenticationContext(context, Constants.AUTHORITY_URL, false);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public static PublicClientApplication newInstance(Context context) {
+        return new PublicClientApplication(context, Constants.CLIENT_ID);
     }
-
 }

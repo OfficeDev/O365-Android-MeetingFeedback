@@ -5,8 +5,7 @@
 package com.microsoft.office365.meetingfeedback;
 
 import com.microsoft.office365.meetingfeedback.model.meeting.RatingData;
-import com.microsoft.office365.meetingfeedback.model.outlook.payload.Event;
 
 public interface RatingActivity {
-    void onSendRating(Event event, RatingData ratingData);
+    void onSendRating(com.microsoft.graph.models.extensions.Event event, RatingData ratingData);
 }

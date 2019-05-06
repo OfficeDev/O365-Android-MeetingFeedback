@@ -8,11 +8,11 @@ public interface Constants {
     String AUTHORITY_URL = "https://login.microsoftonline.com/common";
 
     // Update these constants with the values for your application:
-    String CLIENT_ID = "<YOUR_CLIENT_ID>";
-    String REDIRECT_URI = "<YOUR_REDIRECT_URI>";
-    String SERVICE_ENDPOINT = "<YOUR_SERVICE_ENDPOINT>";
-    String REVIEW_SENDER_ADDRESS = "<YOUR_REVIEW_SENDER_ADDRESS>";
-
+    String CLIENT_ID = "364e5e2a-259c-4d33-b350-75b168cd7c9f";
+    String REDIRECT_URI = "msal364e5e2a-259c-4d33-b350-75b168cd7c9f://auth";
+    String SERVICE_ENDPOINT = "localhost:3000";
+    String REVIEW_SENDER_ADDRESS = "v-gendun@microsoft.com";
+    String[] Scopes = {"https://graph.microsoft.com/User.Read"};
     String MICROSOFT_GRAPH_ENDPOINT = "https://graph.microsoft.com/v1.0/";
     String MICROSOFT_GRAPH_RESOURCE_ID = "https://graph.microsoft.com/";
 }

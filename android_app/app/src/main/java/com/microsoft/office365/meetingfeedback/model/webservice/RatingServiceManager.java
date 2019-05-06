@@ -6,9 +6,10 @@ package com.microsoft.office365.meetingfeedback.model.webservice;
 
 import android.util.Log;
 
+import com.microsoft.graph.concurrency.ICallback;
+import com.microsoft.graph.requests.extensions.IEventCollectionPage;
 import com.microsoft.office365.meetingfeedback.model.DataStore;
 import com.microsoft.office365.meetingfeedback.model.meeting.RatingData;
-import com.microsoft.office365.meetingfeedback.model.outlook.payload.Event;
 import com.microsoft.office365.meetingfeedback.model.service.MyMeetingsResponse;
 import com.microsoft.office365.meetingfeedback.model.service.RatingServiceAlarmManager;
 import com.microsoft.office365.meetingfeedback.model.webservice.payload.CreateRatingRequest;
@@ -87,14 +88,14 @@ public class RatingServiceManager {
         });
     }
 
-    public void addRating(String eventOwner, RatingData ratingData, final Callback<Void> callback) {
+    public void addRating(String eventOwner, RatingData ratingData, final ICallback<IEventCollectionPage> callback) {
         CreateRatingRequest createRatingRequest = new CreateRatingRequest(ratingData.mEventId, eventOwner, ratingData);
         mRatingService.postRatingAsync(mDataStore.getUsername(), eventOwner, createRatingRequest, new Callback<MeetingServiceResponseData>() {
             @Override
             public void success(MeetingServiceResponseData meetingServiceResponseData, Response response) {
                 mDataStore.updateMeetingServiceResponse(meetingServiceResponseData);
                 if(null != callback) {
-                    callback.success(null, response);
+                    callback.success(null);
                 }
             }
 
@@ -102,14 +103,14 @@ public class RatingServiceManager {
             public void failure(RetrofitError error) {
                 Log.e(TAG, "something awful happened!!!!", error);
                 if(null != callback) {
-                    callback.failure(error);
+                    callback.failure(null);
                 }
             }
         });
 
     }
 
-    public void loadRatingFromWebservice(Event event, Callback<Void> callback) {
-        loadRatingFromWebservice(event.mICalUId, event.mOrganizer.emailAddress.mAddress, callback);
+    public void loadRatingFromWebservice(com.microsoft.graph.models.extensions.Event event, Callback<Void> callback) {
+        loadRatingFromWebservice(event.iCalUId, event.organizer.emailAddress.address, callback);
     }
 }

@@ -15,7 +15,6 @@ import android.widget.Spinner;
 import com.microsoft.office365.meetingfeedback.model.EventFilter;
 import com.microsoft.office365.meetingfeedback.model.meeting.EventGroup;
 import com.microsoft.office365.meetingfeedback.model.meeting.RatingData;
-import com.microsoft.office365.meetingfeedback.model.outlook.payload.Event;
 import com.microsoft.office365.meetingfeedback.model.service.RatingServiceAlarmManager;
 import com.microsoft.office365.meetingfeedback.model.webservice.RatingServiceManager;
 import com.microsoft.office365.meetingfeedback.view.CalendarFragmentPagerAdapter;
@@ -51,8 +50,8 @@ public class CalendarActivity extends NavigationBarActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mCalendarViewPager = (ViewPager) findViewById(R.id.activity_calendar_viewpager);
-        mSpinner = (Spinner) findViewById(R.id.activity_calendar_select_role);
+        mCalendarViewPager = findViewById(R.id.activity_calendar_viewpager);
+        mSpinner = findViewById(R.id.activity_calendar_select_role);
         mSpinnerAdapter = ArrayAdapter.createFromResource(this,
                 R.array.meeting_filter_spinner_options,
                 android.R.layout.simple_spinner_item);
@@ -133,7 +132,7 @@ public class CalendarActivity extends NavigationBarActivity implements
         setupViewPagerState();
     }
 
-    public void onSendRating(Event event, RatingData ratingData){
+    public void onSendRating(com.microsoft.graph.models.extensions.Event event, RatingData ratingData) {
         super.sendRating(
                 event,
                 ratingData,

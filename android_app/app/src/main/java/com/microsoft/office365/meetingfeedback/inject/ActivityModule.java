@@ -4,17 +4,16 @@
  */
 package com.microsoft.office365.meetingfeedback.inject;
 
-import com.microsoft.aad.adal.AuthenticationContext;
+import com.microsoft.graph.authentication.MSALAuthenticationProvider;
+import com.microsoft.identity.client.PublicClientApplication;
 import com.microsoft.office365.meetingfeedback.BaseActivity;
 import com.microsoft.office365.meetingfeedback.CalendarActivity;
 import com.microsoft.office365.meetingfeedback.ConnectActivity;
 import com.microsoft.office365.meetingfeedback.MeetingDetailActivity;
+import com.microsoft.office365.meetingfeedback.model.Constants;
 import com.microsoft.office365.meetingfeedback.model.DataStore;
-import com.microsoft.office365.meetingfeedback.model.authentication.AuthenticationContextBuilder;
-import com.microsoft.office365.meetingfeedback.model.authentication.AuthenticationManager;
 import com.microsoft.office365.meetingfeedback.model.outlook.CalendarService;
 import com.microsoft.office365.meetingfeedback.model.outlook.EmailService;
-import com.microsoft.office365.meetingfeedback.model.service.RatingServiceAlarmManager;
 import com.microsoft.office365.meetingfeedback.util.DialogUtil;
 import com.microsoft.office365.meetingfeedback.view.CalendarPageFragment;
 import com.microsoft.office365.meetingfeedback.view.CalendarRangeFragment;
@@ -51,21 +50,29 @@ public class ActivityModule {
 
     @Provides
     @Singleton
-    public AuthenticationManager providesAuthenticationManager(DataStore dataStore,
-                                                               RatingServiceAlarmManager alarmManager) {
-        AuthenticationContext authenticationContext = AuthenticationContextBuilder.newInstance(mActivity);
-        return new AuthenticationManager(dataStore, authenticationContext, alarmManager);
+    public MSALAuthenticationProvider providesMSALAuthenticationProvider(PublicClientApplication publicClientApplication) {
+        MSALAuthenticationProvider msalAuthenticationProvider = new MSALAuthenticationProvider(mActivity,
+                mActivity.getApplication(),
+                publicClientApplication,
+                Constants.Scopes);
+        return msalAuthenticationProvider;
     }
 
     @Provides
     @Singleton
-    public EmailService providesEmailService(AuthenticationManager authenticationManager) {
+    public PublicClientApplication providesPublicClientApplication() {
+        return new PublicClientApplication(mActivity.getApplication(), Constants.CLIENT_ID);//todo: will application context work in all cases here?
+    }
+
+    @Provides
+    @Singleton
+    public EmailService providesEmailService(MSALAuthenticationProvider authenticationManager) {
         return new EmailService(authenticationManager);
     }
 
     @Provides
     @Singleton
-    public CalendarService providesCalendarService(AuthenticationManager authenticationManager, DataStore dataStore) {
+    public CalendarService providesCalendarService(MSALAuthenticationProvider authenticationManager, DataStore dataStore) {
         return new CalendarService(authenticationManager, dataStore);
     }
 }

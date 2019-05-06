@@ -8,7 +8,6 @@ import com.microsoft.office365.meetingfeedback.model.DataStore;
 import com.microsoft.office365.meetingfeedback.model.meeting.DateRange;
 import com.microsoft.office365.meetingfeedback.model.meeting.EventDecorator;
 import com.microsoft.office365.meetingfeedback.model.meeting.EventGroup;
-import com.microsoft.office365.meetingfeedback.model.outlook.payload.Event;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,13 +30,13 @@ public class CalendarUtil {
 
     public static List<EventGroup> eventsAsEventDecorators(DataStore dataStore) {
         List<EventGroup> eventsGroupedByDateRanges = new ArrayList<>();
-        List<Event> events = dataStore.getFilteredEvents();
+        List<com.microsoft.graph.models.extensions.Event> events = dataStore.getFilteredEvents();
         for (int i = 0; i < NUM_PAGES_IN_CALENDAR; i++) {
             DateRange dateRange = buildDateRangeForPage(i);
             List<EventDecorator> eventDecorators = new ArrayList<>();
-            for (Event event : events) {
+            for (com.microsoft.graph.models.extensions.Event event : events) {
                 if (dateRange.isWithinRange(event)) {
-                    eventDecorators.add(new EventDecorator(event, dataStore.getWebServiceRatingDataForEvent(event.mICalUId)));
+                    eventDecorators.add(new EventDecorator(event, dataStore.getWebServiceRatingDataForEvent(event.iCalUId)));
                 }
             }
             eventsGroupedByDateRanges.add(new EventGroup(i, dateRange, eventDecorators));

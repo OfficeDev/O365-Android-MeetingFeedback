@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import com.microsoft.office365.meetingfeedback.model.meeting.EventDecorator;
 import com.microsoft.office365.meetingfeedback.model.meeting.RatingData;
-import com.microsoft.office365.meetingfeedback.model.outlook.payload.Event;
 import com.microsoft.office365.meetingfeedback.model.webservice.RatingServiceManager;
 import com.microsoft.office365.meetingfeedback.model.webservice.payload.MeetingServiceResponseData;
 import com.microsoft.office365.meetingfeedback.view.RatingDialogFragment;
@@ -46,7 +45,7 @@ public class MeetingDetailActivity extends NavigationBarActivity implements Rati
     private RecyclerView mMeetingRatings;
     private TextView mMeetingOrganizer;
 
-    private Event mEvent;
+    private com.microsoft.graph.models.extensions.Event mEvent;
     private EventDecorator mEventDecorator;
 
     private TextView mEventDescription;
@@ -66,19 +65,19 @@ public class MeetingDetailActivity extends NavigationBarActivity implements Rati
         mEventId = getIntent().getStringExtra(EVENT_ID_EXTRA);
         mEvent = mDataStore.getEventById(mEventId);
         mEventDecorator = new EventDecorator(mEvent, mDataStore.getWebServiceRatingDataForEvent(mEventId));
-        mMeetingOrganizer = (TextView) findViewById(R.id.activity_meeting_detail_organizer);
-        mMeetingDetailEventDate = (TextView) findViewById(R.id.activity_meeting_detail_event_date);
-        mMeetingRatings = (RecyclerView) findViewById(R.id.activity_meeting_detail_recycler_view);
-        mEventRatingButton = (Button) findViewById(R.id.rate_button);
-        mExistingRating = (TextView) findViewById(R.id.event_existing_rating);
-        mActivityTitle = (TextView) findViewById(R.id.activity_meeting_detail_title);
-        mEventDescription = (TextView) findViewById(R.id.activity_meeting_detail_description);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_meeting_detail_swipe_refresh_layout);
-        mRatingArea = (LinearLayout) findViewById(R.id.rating_area);
-        mRatingHeader = (LinearLayout) findViewById(R.id.activity_meeting_detail_rating_header);
-        mRatingNone = (LinearLayout) findViewById(R.id.activity_meeting_detail_rating_none);
+        mMeetingOrganizer = findViewById(R.id.activity_meeting_detail_organizer);
+        mMeetingDetailEventDate = findViewById(R.id.activity_meeting_detail_event_date);
+        mMeetingRatings = findViewById(R.id.activity_meeting_detail_recycler_view);
+        mEventRatingButton = findViewById(R.id.rate_button);
+        mExistingRating = findViewById(R.id.event_existing_rating);
+        mActivityTitle = findViewById(R.id.activity_meeting_detail_title);
+        mEventDescription = findViewById(R.id.activity_meeting_detail_description);
+        mSwipeRefreshLayout = findViewById(R.id.activity_meeting_detail_swipe_refresh_layout);
+        mRatingArea = findViewById(R.id.rating_area);
+        mRatingHeader = findViewById(R.id.activity_meeting_detail_rating_header);
+        mRatingNone = findViewById(R.id.activity_meeting_detail_rating_none);
 
-        mMeetingOrganizer.setText(mEvent.mOrganizer.emailAddress.mName);
+        mMeetingOrganizer.setText(mEvent.organizer.emailAddress.name);
         mActivityTitle.setText(mEventDecorator.mSubject);
         mEventDescription.setText(mEventDecorator.descriptionAsHtml());
         mMeetingDetailEventDate.setText(mEventDecorator.formattedDateAndTime());
@@ -178,7 +177,7 @@ public class MeetingDetailActivity extends NavigationBarActivity implements Rati
         setupRatingButton();
     }
 
-    public void onSendRating(Event event, RatingData ratingData){
+    public void onSendRating(com.microsoft.graph.models.extensions.Event event, RatingData ratingData) {
         super.sendRating(
                 event,
                 ratingData,

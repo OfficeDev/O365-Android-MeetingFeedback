@@ -4,48 +4,52 @@
  */
 package com.microsoft.office365.meetingfeedback.model.outlook;
 
+import com.microsoft.graph.authentication.MSALAuthenticationProvider;
+import com.microsoft.graph.concurrency.ICallback;
+import com.microsoft.graph.core.ClientException;
+import com.microsoft.graph.models.extensions.Event;
+import com.microsoft.graph.models.extensions.IGraphServiceClient;
+import com.microsoft.graph.options.HeaderOption;
+import com.microsoft.graph.options.Option;
+import com.microsoft.graph.options.QueryOption;
+import com.microsoft.graph.requests.extensions.GraphServiceClient;
+import com.microsoft.graph.requests.extensions.IEventCollectionPage;
 import com.microsoft.office365.meetingfeedback.model.DataStore;
-import com.microsoft.office365.meetingfeedback.model.authentication.AuthenticationManager;
 import com.microsoft.office365.meetingfeedback.model.meeting.DateRange;
-import com.microsoft.office365.meetingfeedback.model.outlook.payload.Envelope;
-import com.microsoft.office365.meetingfeedback.model.outlook.payload.Event;
-import com.microsoft.office365.meetingfeedback.model.request.RESTHelper;
 import com.microsoft.office365.meetingfeedback.util.FormatUtil;
 
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-
 public class CalendarService {
 
+    private IGraphServiceClient graphClient;
     private CalendarInterface mCalendarClient;
     private DataStore mDataStore;
     private List<Event> mAccumulatedEvents;
 
-    public CalendarService(AuthenticationManager authenticationManager, DataStore dataStore) {
+    public CalendarService(MSALAuthenticationProvider authenticationManager, DataStore dataStore) {
         mDataStore = dataStore;
-        RestAdapter restAdapter = new RESTHelper(authenticationManager).getRestAdapter();
-        mCalendarClient = restAdapter.create(CalendarInterface.class);
+        graphClient = GraphServiceClient
+                .builder()
+                .authenticationProvider(authenticationManager)
+                .buildClient();
     }
 
-    public void fetchEvents(final Callback<Void> callback) {
-        getEvents(new Callback<Envelope<Event>>() {
+    public void fetchEvents(final ICallback<IEventCollectionPage> callback) {
+        getEvents(new ICallback<IEventCollectionPage>() {
             @Override
-            public void success(Envelope envelope, Response response) {
-                mAccumulatedEvents = envelope.mValues;
+            public void success(IEventCollectionPage iEventCollectionPage) {
+                mAccumulatedEvents = iEventCollectionPage.getCurrentPage();
                 mDataStore.setEvents(mAccumulatedEvents);
                 if(null != callback) {
-                    callback.success(null, response);
+                    callback.success(iEventCollectionPage);
                 }
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void failure(ClientException error) {
                 if(null != callback) {
                     callback.failure(error);
                 }
@@ -53,22 +57,23 @@ public class CalendarService {
         });
     }
 
-    private void getEvents(Callback<Envelope<Event>> callback) {
+    private void getEvents(ICallback<IEventCollectionPage> callback) {
         DateRange dateRange = getDateRange();
         String startDateTime = FormatUtil.convertDateToUrlString(dateRange.mStart.getTime());
         String endDateTime = FormatUtil.convertDateToUrlString(dateRange.mEnd.getTime());
         String preferredTimezone = "outlook.timezone=\"" + TimeZone.getDefault().getID() + "\"";
 
-        mCalendarClient.getEvents(
-                "application/json",
-                preferredTimezone,
-                startDateTime,
-                endDateTime,
-                "subject,start,end,organizer,isOrganizer,attendees,bodyPreview,iCalUID",
-                "start/datetime desc",
-                "150",
-                callback
-        );
+        List<Option> options = new java.util.LinkedList<>();
+        options.add(new HeaderOption("Content-type", "application/json"));
+        options.add(new HeaderOption("Prefer", preferredTimezone));
+        options.add(new QueryOption("startdatetime", startDateTime));
+        options.add(new QueryOption("enddatetime", endDateTime));
+        options.add(new QueryOption("orderby", "start/datetime desc"));
+        options.add(new QueryOption("top", "150"));
+
+        graphClient.me().events().buildRequest(options)
+                .select("subject,start,end,organizer,isOrganizer,attendees,bodyPreview,iCalUID")
+                .get(callback);
     }
 
     private DateRange getDateRange() {

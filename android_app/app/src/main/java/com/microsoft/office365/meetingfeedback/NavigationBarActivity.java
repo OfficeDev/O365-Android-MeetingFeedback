@@ -16,7 +16,10 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.microsoft.identity.client.IAccount;
 import com.microsoft.office365.meetingfeedback.model.User;
+
+import java.util.List;
 
 
 public abstract class NavigationBarActivity extends BaseActivity {
@@ -58,11 +61,11 @@ public abstract class NavigationBarActivity extends BaseActivity {
     }
 
     private void setUpNavigationDrawer() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.action_bar);
-        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.activity_navigation_drawer_activity_container);
+        Toolbar toolbar = findViewById(R.id.action_bar);
+        FrameLayout frameLayout = findViewById(R.id.activity_navigation_drawer_activity_container);
         LayoutInflater.from(this).inflate(getActivityLayoutId(), frameLayout);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_navigation_drawer_navigation_drawer);
+        mDrawerLayout = findViewById(R.id.activity_navigation_drawer_navigation_drawer);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_loading) {
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -76,21 +79,27 @@ public abstract class NavigationBarActivity extends BaseActivity {
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        mUsernameTextView = (TextView) findViewById(R.id.activity_navigation_drawer_username_text_view);
-        mEmailTextView = (TextView) findViewById(R.id.activity_navigation_drawer_email_text_view);
-        mSignOutButton = (Button) findViewById(R.id.activity_navigation_drawer_sign_out_button);
+        mUsernameTextView = findViewById(R.id.activity_navigation_drawer_username_text_view);
+        mEmailTextView = findViewById(R.id.activity_navigation_drawer_email_text_view);
+        mSignOutButton = findViewById(R.id.activity_navigation_drawer_sign_out_button);
         mSignOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAuthenticationManager.signout();
 
-                //Clear objects that hold user state
-                mDataStore.setUser(null);
-                finish();
+                List<IAccount> accounts = mAuthenticationManager.getAccounts();
+                if (!accounts.isEmpty()) {
+                    for (final IAccount account : accounts) {
+                        mAuthenticationManager.removeAccount(account);
+                        //Clear objects that hold user state
+                        mDataStore.setUser(null);
+                        finish();
 
-                Intent intent = new Intent(NavigationBarActivity.this, ConnectActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                        Intent intent = new Intent(NavigationBarActivity.this, ConnectActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    }
+                }
+
             }
         });
         User user = mDataStore.getUser();

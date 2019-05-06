@@ -10,13 +10,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.microsoft.graph.authentication.MSALAuthenticationProvider;
+import com.microsoft.graph.concurrency.ICallback;
+import com.microsoft.graph.core.ClientException;
+import com.microsoft.graph.requests.extensions.IEventCollectionPage;
+import com.microsoft.identity.client.PublicClientApplication;
 import com.microsoft.office365.meetingfeedback.inject.ActivityModule;
 import com.microsoft.office365.meetingfeedback.model.DataStore;
-import com.microsoft.office365.meetingfeedback.model.authentication.AuthenticationManager;
 import com.microsoft.office365.meetingfeedback.model.meeting.RatingData;
 import com.microsoft.office365.meetingfeedback.model.outlook.CalendarService;
 import com.microsoft.office365.meetingfeedback.model.outlook.EmailService;
-import com.microsoft.office365.meetingfeedback.model.outlook.payload.Event;
 import com.microsoft.office365.meetingfeedback.model.webservice.RatingServiceManager;
 import com.microsoft.office365.meetingfeedback.util.ConnectivityUtil;
 import com.microsoft.office365.meetingfeedback.util.DialogUtil;
@@ -25,9 +28,6 @@ import com.microsoft.office365.meetingfeedback.view.RateMyMeetingsDialogFragment
 import javax.inject.Inject;
 
 import dagger.ObjectGraph;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -36,7 +36,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     private ObjectGraph mActivityGraph;
 
     @Inject
-    AuthenticationManager mAuthenticationManager;
+    PublicClientApplication mAuthenticationManager;
+    @Inject
+    MSALAuthenticationProvider msalAuthenticationProvider;
     @Inject
     CalendarService mCalendarService;
     @Inject
@@ -78,7 +80,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         return mProgressDialog;
     }
 
-    public void sendRating(Event event, RatingData ratingData, Runnable postRatingTasks) {
+    public void sendRating(com.microsoft.graph.models.extensions.Event event, RatingData ratingData, Runnable postRatingTasks) {
         mDialogUtil.showProgressDialog(
                 this,
                 getString(R.string.submit_rating),
@@ -91,7 +93,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         );
 
         mRatingServiceManager.addRating(
-                event.mOrganizer.emailAddress.mAddress,
+                event.organizer.emailAddress.address,
                 ratingData,
                 dismissDialogCallback(
                         "Rating Sent!",
@@ -102,14 +104,14 @@ public abstract class BaseActivity extends AppCompatActivity {
         );
     }
 
-    protected Callback<Void> dismissDialogCallback(
+    protected ICallback<IEventCollectionPage> dismissDialogCallback(
             final String toastMessage,
             final String alertDialogTitle,
             final String alertDialogMessage,
             final Runnable action) {
-        return new Callback<Void>() {
+        return new ICallback<IEventCollectionPage>() {
             @Override
-            public void success(Void aVoid, Response response) {
+            public void success(IEventCollectionPage iEventCollectionPage) {
                 //update the webservice with the ratingEvent rating
                 mDialogUtil.dismissDialog(BaseActivity.this);
                 Log.d(TAG, "DismissDialogCallback Success");
@@ -122,7 +124,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void failure(ClientException ex) {
                 Log.e(TAG, "DismissDialogCallback Failure");
                 mDialogUtil.dismissDialog(BaseActivity.this);
                 mDialogUtil.showAlertDialog(BaseActivity.this, alertDialogTitle, alertDialogMessage);

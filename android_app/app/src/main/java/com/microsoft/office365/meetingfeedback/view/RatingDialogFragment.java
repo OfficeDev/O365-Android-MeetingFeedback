@@ -23,7 +23,6 @@ import com.microsoft.office365.meetingfeedback.RatingActivity;
 import com.microsoft.office365.meetingfeedback.model.DataStore;
 import com.microsoft.office365.meetingfeedback.model.meeting.RatingData;
 import com.microsoft.office365.meetingfeedback.model.outlook.EmailService;
-import com.microsoft.office365.meetingfeedback.model.outlook.payload.Event;
 import com.microsoft.office365.meetingfeedback.model.webservice.RatingServiceManager;
 
 import javax.inject.Inject;
@@ -40,7 +39,7 @@ public class RatingDialogFragment extends BaseDialogFragment {
 
     private static final String MEETING_ID = "MEETING_ID";
     private Button mPositiveButton;
-    private Event mEvent;
+    private com.microsoft.graph.models.extensions.Event mEvent;
 
     private EditText mComments;
     private TextView mOrganizer;
@@ -71,9 +70,9 @@ public class RatingDialogFragment extends BaseDialogFragment {
                 false
         );
 
-        mOrganizer = (TextView) inflatedView.findViewById(R.id.fragment_rating_organizer_name);
-        mComments = (EditText) inflatedView.findViewById(R.id.fragment_rating_comments);
-        mRatingBar = (RatingBar) inflatedView.findViewById(R.id.fragment_rating_rating_bar);
+        mOrganizer = inflatedView.findViewById(R.id.fragment_rating_organizer_name);
+        mComments = inflatedView.findViewById(R.id.fragment_rating_comments);
+        mRatingBar = inflatedView.findViewById(R.id.fragment_rating_rating_bar);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setView(inflatedView)
@@ -81,7 +80,7 @@ public class RatingDialogFragment extends BaseDialogFragment {
                 .setPositiveButton(R.string.rate_button_txt, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        final Event event = mDataStore.getEventById(mEvent.mICalUId);
+                        final com.microsoft.graph.models.extensions.Event event = mDataStore.getEventById(mEvent.iCalUId);
                         final RatingData ratingData = buildRatingData();
 
                         RatingActivity ratingActivity = (RatingActivity)getActivity();
@@ -90,7 +89,7 @@ public class RatingDialogFragment extends BaseDialogFragment {
                 })
                 .setNegativeButton(android.R.string.cancel, null);
 
-        mOrganizer.setText(mEvent.mOrganizer.emailAddress.mName);
+        mOrganizer.setText(mEvent.organizer.emailAddress.name);
 
         final AlertDialog alertDialog = builder.create();
 
@@ -116,11 +115,11 @@ public class RatingDialogFragment extends BaseDialogFragment {
     }
 
     private RatingData buildRatingData() {
-        return new RatingData(mEvent.mICalUId, mRatingBar.getRating(), mComments.getText().toString(), mUsername);
+        return new RatingData(mEvent.iCalUId, mRatingBar.getRating(), mComments.getText().toString(), mUsername);
     }
 
     private String buildEventTitle() {
-        return String.format("Rate %s", mEvent.mSubject);
+        return String.format("Rate %s", mEvent.subject);
     }
 
 }

@@ -4,10 +4,8 @@
  */
 package com.microsoft.office365.meetingfeedback.inject;
 
-import com.microsoft.aad.adal.AuthenticationContext;
 import com.microsoft.office365.meetingfeedback.MeetingFeedbackApplication;
 import com.microsoft.office365.meetingfeedback.model.DataStore;
-import com.microsoft.office365.meetingfeedback.model.authentication.AuthenticationContextBuilder;
 import com.microsoft.office365.meetingfeedback.model.service.MyMeetingsService;
 import com.microsoft.office365.meetingfeedback.model.service.RatingServiceAlarmManager;
 import com.microsoft.office365.meetingfeedback.model.webservice.RatingService;
@@ -44,12 +42,6 @@ public class ApplicationModule {
     @Singleton
     public DataStore providesDataStore(SharedPrefsUtil sharedPrefsUtil) {
         return new DataStore(sharedPrefsUtil);
-    }
-
-    @Provides
-    @Singleton
-    public AuthenticationContext providesAuthenticationContext() {
-        return AuthenticationContextBuilder.newInstance(mApplication); //todo: will application context work in all cases here?
     }
 
     @Provides

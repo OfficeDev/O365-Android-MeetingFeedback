@@ -4,8 +4,6 @@
  */
 package com.microsoft.office365.meetingfeedback.util;
 
-import com.microsoft.office365.meetingfeedback.model.outlook.payload.Event;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,8 +12,8 @@ import java.util.Locale;
 public class FormatUtil {
     private static final String RAW_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS";
 
-    public static String displayFormattedEventDate(Event event) {
-        return formatDate(convertStringToDate(event.mStart.mDateTime));
+    public static String displayFormattedEventDate(com.microsoft.graph.models.extensions.Event event) {
+        return formatDate(convertStringToDate(event.start.dateTime));
     }
 
     public static String formatDate(Date eventDate) {
@@ -25,9 +23,9 @@ public class FormatUtil {
         return new SimpleDateFormat("MMM dd", Locale.getDefault()).format(eventDate);
     }
 
-    public static String displayFormattedEventTime(Event event) {
-        Date eventDate = convertStringToDate(event.mStart.mDateTime);
-        Date eventDateEnd = convertStringToDate(event.mEnd.mDateTime);
+    public static String displayFormattedEventTime(com.microsoft.graph.models.extensions.Event event) {
+        Date eventDate = convertStringToDate(event.start.dateTime);
+        Date eventDateEnd = convertStringToDate(event.end.dateTime);
         String formattedStartTime = new SimpleDateFormat("HH:mm", Locale.US).format(eventDate);
         String formattedEndTime = new SimpleDateFormat("HH:mm", Locale.US).format(eventDateEnd);
         return String.format("%s - %s", formattedStartTime, formattedEndTime);

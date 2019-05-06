@@ -16,6 +16,9 @@ import android.widget.Toast;
 import com.microsoft.aad.adal.AuthenticationCallback;
 import com.microsoft.aad.adal.AuthenticationResult;
 import com.microsoft.aad.adal.IWindowComponent;
+import com.microsoft.identity.client.IAccount;
+
+import java.util.List;
 
 public class ConnectActivity extends BaseActivity implements AuthenticationCallback<AuthenticationResult>, IWindowComponent {
 
@@ -28,17 +31,18 @@ public class ConnectActivity extends BaseActivity implements AuthenticationCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connect);
-        mConnectButton = (Button) findViewById(R.id.activity_connect_connect_button);
-        mConnectProgressBar = (ProgressBar) findViewById(R.id.activity_connect_progress_bar);
-        mDescriptionTextView = (TextView) findViewById(R.id.activity_connect_description_text_view);
-        mConnectButton.setVisibility(View.GONE);
-        mAuthenticationManager.authenticate(this);
-        mConnectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAuthenticationManager.authenticate(ConnectActivity.this);
-            }
-        });
+        mConnectButton = findViewById(R.id.activity_connect_connect_button);
+        mConnectProgressBar = findViewById(R.id.activity_connect_progress_bar);
+        mDescriptionTextView = findViewById(R.id.activity_connect_description_text_view);
+        mConnectButton.setVisibility(View.VISIBLE);
+        List<IAccount> accounts = mAuthenticationManager.getAccounts();
+        //mConnectButton.setOnClickListener(new View.OnClickListener() {
+        //   @Override
+        //   public void onClick(View v) {
+        //        mAuthenticationManager.authenticate(ConnectActivity.this);
+        //        mAuthenticationManager.authenticate(ConnectActivity.this);
+        //    }
+        //});
     }
 
     @Override
@@ -62,5 +66,11 @@ public class ConnectActivity extends BaseActivity implements AuthenticationCallb
                 R.string.connect_toast_text_error,
                 Toast.LENGTH_LONG).show();
 
+    }
+
+    // Add this function in your Authenticating activity
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        msalAuthenticationProvider.handleInteractiveRequestRedirect(requestCode, resultCode, data);
     }
 }

@@ -4,8 +4,8 @@
  */
 package com.microsoft.office365.meetingfeedback.model;
 
+import com.microsoft.graph.models.extensions.Event;
 import com.microsoft.office365.meetingfeedback.model.meeting.EventGroup;
-import com.microsoft.office365.meetingfeedback.model.outlook.payload.Event;
 import com.microsoft.office365.meetingfeedback.model.webservice.payload.MeetingServiceResponseData;
 import com.microsoft.office365.meetingfeedback.util.CalendarUtil;
 import com.microsoft.office365.meetingfeedback.util.SharedPrefsUtil;
@@ -17,8 +17,8 @@ import java.util.Map;
 
 public class DataStore {
 
-    List<Event> mEvents = new ArrayList<>();
-    Map<String, Event> mEventsMap = new HashMap<>();
+    List<com.microsoft.graph.models.extensions.Event> mEvents = new ArrayList<>();
+    Map<String, com.microsoft.graph.models.extensions.Event> mEventsMap = new HashMap<>();
     Map<String, MeetingServiceResponseData> mMeetingServiceData = new HashMap<>();
 
     private User mUser;
@@ -34,7 +34,7 @@ public class DataStore {
         return CalendarUtil.eventsAsEventDecorators(this);
     }
 
-    public List<Event> getEvents() {
+    public List<com.microsoft.graph.models.extensions.Event> getEvents() {
         if (mEvents == null) {
             return new ArrayList<>();
         }
@@ -55,14 +55,14 @@ public class DataStore {
         return mMeetingServiceData.get(eventId);
     }
 
-    public void setEvents(List<Event> events) {
+    public void setEvents(List<com.microsoft.graph.models.extensions.Event> events) {
         mEvents = events;
-        for (Event event : events) {
-            mEventsMap.put(event.mICalUId, event);
+        for (com.microsoft.graph.models.extensions.Event event : events) {
+            mEventsMap.put(event.iCalUId, event);
         }
     }
 
-    public Event getEventById(String id) {
+    public com.microsoft.graph.models.extensions.Event getEventById(String id) {
         return mEventsMap.get(id);
     }
 
@@ -105,9 +105,9 @@ public class DataStore {
 
     public List<Event> getFilteredEvents() {
         List<Event> filteredEvents = new ArrayList<>();
-        for (Event event : getEvents()) {
-            boolean condition = event.mIsOrganizer;
-            condition = mFilter.equals(EventFilter.MY_MEETINGS) ? condition : !condition;
+        for (com.microsoft.graph.models.extensions.Event event : getEvents()) {
+            boolean condition = event.isOrganizer;
+            condition = mFilter.equals(EventFilter.MY_MEETINGS) == condition;
             if (condition) {
                 filteredEvents.add(event);
             }
