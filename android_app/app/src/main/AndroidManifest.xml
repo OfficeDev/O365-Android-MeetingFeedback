@@ -57,7 +57,7 @@
 
                 <data
                     android:host="auth"
-                    android:scheme="msal<YOUR_CLIENT_ID>" />
+                    android:scheme="msalyourclientid" />
             </intent-filter>
         </activity>
         <service android:name=".model.service.MyMeetingsService" />
