@@ -4,20 +4,17 @@
  */
 package com.microsoft.office365.meetingfeedback.model;
 
-import com.microsoft.aad.adal.UserInfo;
+import com.microsoft.identity.client.IAccount;
 
 public class User {
 
     private String mUserId;
     private String mUsername;
-    private String mFirstName;
-    private String mLastName;
 
-    public User(UserInfo userInfo) {
-        mUserId = userInfo.getUserId();
-        mUsername = userInfo.getDisplayableId();
-        mFirstName = userInfo.getGivenName();
-        mLastName = userInfo.getFamilyName();
+
+    public User(IAccount userInfo) {
+        mUserId = userInfo.getAccountIdentifier().getIdentifier();
+        mUsername = userInfo.getUsername();
     }
 
     public String getUserId() {
@@ -27,9 +24,4 @@ public class User {
     public String getUsername() {
         return mUsername;
     }
-
-    public String getFullName() {
-        return mFirstName + " " + mLastName;
-    }
-
 }

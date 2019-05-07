@@ -61,7 +61,8 @@ public class ActivityModule {
     @Provides
     @Singleton
     public PublicClientApplication providesPublicClientApplication() {
-        return new PublicClientApplication(mActivity.getApplication(), Constants.CLIENT_ID);//todo: will application context work in all cases here?
+        PublicClientApplication publicClientApplication = new PublicClientApplication(mActivity.getApplication(), Constants.CLIENT_ID, Constants.AUTHORITY_URL);//todo: will application context work in all cases here?
+        return publicClientApplication;
     }
 
     @Provides

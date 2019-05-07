@@ -86,10 +86,10 @@ public abstract class NavigationBarActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
 
-                List<IAccount> accounts = mAuthenticationManager.getAccounts();
+                List<IAccount> accounts = publicClientApplication.getAccounts();
                 if (!accounts.isEmpty()) {
                     for (final IAccount account : accounts) {
-                        mAuthenticationManager.removeAccount(account);
+                        publicClientApplication.removeAccount(account);
                         //Clear objects that hold user state
                         mDataStore.setUser(null);
                         finish();
@@ -103,8 +103,8 @@ public abstract class NavigationBarActivity extends BaseActivity {
             }
         });
         User user = mDataStore.getUser();
-        mEmailTextView.setText(user.getUsername());
-        mUsernameTextView.setText(user.getFullName());
+        mEmailTextView.setText(user.getUserId());
+        mUsernameTextView.setText(user.getUsername());
     }
 
 }

@@ -36,7 +36,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private ObjectGraph mActivityGraph;
 
     @Inject
-    PublicClientApplication mAuthenticationManager;
+    PublicClientApplication publicClientApplication;
     @Inject
     MSALAuthenticationProvider msalAuthenticationProvider;
     @Inject
@@ -115,11 +115,11 @@ public abstract class BaseActivity extends AppCompatActivity {
                 //update the webservice with the ratingEvent rating
                 mDialogUtil.dismissDialog(BaseActivity.this);
                 Log.d(TAG, "DismissDialogCallback Success");
-                if(null != toastMessage) {
+                if (null != toastMessage) {
                     Toast.makeText(BaseActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
                 }
-                if (null != action){
-                    action.run();
+                if (null != action) {
+                    runOnUiThread(action);
                 }
             }
 
@@ -128,7 +128,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 Log.e(TAG, "DismissDialogCallback Failure");
                 mDialogUtil.dismissDialog(BaseActivity.this);
                 mDialogUtil.showAlertDialog(BaseActivity.this, alertDialogTitle, alertDialogMessage);
-                if (null != action){
+                if (null != action) {
                     action.run();
                 }
             }

@@ -10,6 +10,8 @@ import android.util.Log;
 import com.microsoft.graph.authentication.MSALAuthenticationProvider;
 import com.microsoft.graph.concurrency.ICallback;
 import com.microsoft.graph.core.ClientException;
+import com.microsoft.graph.models.extensions.EmailAddress;
+import com.microsoft.graph.models.extensions.Event;
 import com.microsoft.graph.models.extensions.IGraphServiceClient;
 import com.microsoft.graph.models.extensions.ItemBody;
 import com.microsoft.graph.models.extensions.Message;
@@ -50,7 +52,7 @@ public class EmailService {
      * @param ratingData Details about the rating (rate and comments).
      */
     public void sendRatingMail (
-            final com.microsoft.graph.models.extensions.Event event,
+            final Event event,
             final RatingData ratingData
     ) {
         // create the email
@@ -80,18 +82,18 @@ public class EmailService {
             String subject,
             String htmlBody,
             String recipient) {
-        com.microsoft.graph.models.extensions.EmailAddress mailRecipient = new com.microsoft.graph.models.extensions.EmailAddress();
+        EmailAddress mailRecipient = new EmailAddress();
         mailRecipient.address = recipient;
 
-        Recipient toRecipient = new com.microsoft.graph.models.extensions.Recipient();
+        Recipient toRecipient = new Recipient();
         toRecipient.emailAddress = mailRecipient;
 
-        com.microsoft.graph.models.extensions.EmailAddress ratingAddress = new com.microsoft.graph.models.extensions.EmailAddress();
+        EmailAddress ratingAddress = new EmailAddress();
         ratingAddress.address = Constants.REVIEW_SENDER_ADDRESS;
 
-        Recipient sender = new com.microsoft.graph.models.extensions.Recipient();
+        Recipient sender = new Recipient();
         sender.emailAddress = ratingAddress;
-        Recipient from = new com.microsoft.graph.models.extensions.Recipient();
+        Recipient from = new Recipient();
         from.emailAddress = ratingAddress;
 
         ItemBody body = new ItemBody();
@@ -101,7 +103,7 @@ public class EmailService {
         Message sampleMsg = new Message();
         sampleMsg.subject = subject;
         sampleMsg.body = body;
-        List<Recipient> recipientsList = new ArrayList<Recipient>();
+        List<Recipient> recipientsList = new ArrayList<>();
         recipientsList.add(toRecipient);
         sampleMsg.toRecipients = recipientsList;
         sampleMsg.sender = sender;
@@ -110,7 +112,7 @@ public class EmailService {
         return sampleMsg;
     }
 
-    private String formatSubject(com.microsoft.graph.models.extensions.Event event) {
+    private String formatSubject(Event event) {
         return String.format(
                 "Your meeting, %s, on %s (%s) , was recently reviewed.",
                 event.subject,
@@ -118,7 +120,7 @@ public class EmailService {
                 FormatUtil.displayFormattedEventTime(event));
     }
 
-    private String formatBody(com.microsoft.graph.models.extensions.Event event, RatingData ratingData) {
+    private String formatBody(Event event, RatingData ratingData) {
         StringBuilder stringBuilder = new StringBuilder();
         String eventDate = FormatUtil.displayFormattedEventDate(event);
         String eventTime = FormatUtil.displayFormattedEventTime(event);
