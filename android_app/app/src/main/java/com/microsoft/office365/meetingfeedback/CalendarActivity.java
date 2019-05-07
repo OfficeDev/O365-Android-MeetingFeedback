@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.microsoft.graph.models.extensions.Event;
 import com.microsoft.office365.meetingfeedback.model.EventFilter;
 import com.microsoft.office365.meetingfeedback.model.meeting.EventGroup;
 import com.microsoft.office365.meetingfeedback.model.meeting.RatingData;
@@ -132,7 +133,7 @@ public class CalendarActivity extends NavigationBarActivity implements
         setupViewPagerState();
     }
 
-    public void onSendRating(com.microsoft.graph.models.extensions.Event event, RatingData ratingData) {
+    public void onSendRating(Event event, RatingData ratingData) {
         super.sendRating(
                 event,
                 ratingData,

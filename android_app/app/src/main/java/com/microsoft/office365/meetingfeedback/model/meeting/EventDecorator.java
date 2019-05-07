@@ -9,6 +9,7 @@ import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
 
+import com.microsoft.graph.models.extensions.Event;
 import com.microsoft.office365.meetingfeedback.R;
 import com.microsoft.office365.meetingfeedback.model.webservice.payload.MeetingServiceResponseData;
 import com.microsoft.office365.meetingfeedback.util.FormatUtil;
@@ -29,7 +30,7 @@ public class EventDecorator implements Serializable {
     public final String mOrganizerAddress;
     public final boolean mIsOrganizer;
 
-    public EventDecorator(com.microsoft.graph.models.extensions.Event event, MeetingServiceResponseData serviceData) {
+    public EventDecorator(Event event, MeetingServiceResponseData serviceData) {
         mEventId = event.iCalUId;
         mOrganizerName = event.organizer.emailAddress.name;
         mOrganizerAddress = event.organizer.emailAddress.address;

@@ -129,7 +129,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 mDialogUtil.dismissDialog(BaseActivity.this);
                 mDialogUtil.showAlertDialog(BaseActivity.this, alertDialogTitle, alertDialogMessage);
                 if (null != action) {
-                    action.run();
+                    runOnUiThread(action);
                 }
             }
         };
