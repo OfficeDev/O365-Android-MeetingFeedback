@@ -6,6 +6,7 @@ package com.microsoft.office365.meetingfeedback.model;
 
 public interface Constants {
     String AUTHORITY_URL = "https://login.microsoftonline.com/common";
+    //Replace with your specific identifiers
     String CLIENT_ID = "<YOUR_CLIENT_ID>";
     String SERVICE_ENDPOINT = "<YOUR_WEBSERVICE_ENDPOINT>"; //The Ruby On Rails app in the webservice folder. format as http://10.0.2.2:3000
     String REVIEW_SENDER_ADDRESS = "<YOUR_REVIEW_SENDER_ADDRESS>";
